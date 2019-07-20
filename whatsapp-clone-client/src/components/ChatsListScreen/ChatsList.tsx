@@ -1,26 +1,37 @@
-import React from 'react';
-const ChatsList: React.FC = () => (
+import React, { FC } from 'react';
+import moment from 'moment';
+
+import { chats } from '../../db';
+
+const ChatsList: FC = () => (
   <div>
     <ul>
-      <li>
-        <img
-          src="https://randomuser.me/api/portraits/thumb/men/1.jpg"
-          alt="Profile"
-        />
-        <div>Ethan Gonzalez</div>
-        <div>You on your way?</div>
-        <div>10:25</div>
-      </li>
-      <li>
-        <img
-          src="https://randomuser.me/api/portraits/thumb/men/2.jpg"
-          alt="Profile"
-        />
-        <div>Bryan Wallace</div>
-        <div>Hey, it's me</div>
-        <div>13:27</div>
-      </li>
+      {chats.map(chat => {
+        console.log(chat.lastMessage);
+        return (
+          <li key={chat.id}>
+            <img src={chat.picture} alt="Profile" className="src" />
+            <div>{chat.name}</div>
+            {chat.lastMessage && (
+              <div>
+                <div>{chat.lastMessage.content}</div>
+                <div>{moment(chat.lastMessage.createdAt).format('HH:mm')}</div>
+              </div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   </div>
 );
 export default ChatsList;
+
+/* 
+
+          {chat.lastMessage && (
+            <React.Fragment>
+              <div>{chat.lastMessage.content}</div>
+              <div>{chat.lastMessage.createdAt}</div>
+            </React.Fragment>
+          )}
+*/
