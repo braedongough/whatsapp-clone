@@ -5,7 +5,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "test": "jest"
+  },
+  "jest-junit": {
+    "outputDirectory": "./test-results"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
@@ -15,7 +19,9 @@
     "@types/graphql-iso-date": "^3.3.1",
     "@types/jest": "^24.0.15",
     "@types/node": "^12.6.8",
+    "apollo-server-testing": "^2.7.0",
     "jest": "^24.8.0",
+    "jest-junit": "^6.4.0",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3"
@@ -29,5 +35,19 @@
     "graphql-import": "^0.7.1",
     "graphql-iso-date": "^3.6.1",
     "graphql-tools": "^4.0.5"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    },
+    "reporters": [
+      "default",
+      "jest-junit"
+    ]
   }
 }
