@@ -1,7 +1,11 @@
-import React, { FC, useState, useMemo } from 'react';
+import React, { FC, useState, useMemo, useCallback } from 'react';
 import moment from 'moment';
 import { List, ListItem } from '@material-ui/core';
 import styled from 'styled-components';
+import { History } from 'history';
+
+// ! CONTINUE LESSON AT
+// * Client Step 6.4: Test new navigation logic [https://www.tortilla.academy/Urigo/WhatsApp-Clone-Tutorial/master/next/step/6]
 
 const Container = styled.div`
   height: calc(100% - 56px);
@@ -63,7 +67,11 @@ const getChatsQuery = `
   }
 `;
 
-const ChatsList: FC = () => {
+interface ChatsListProps {
+  history: History;
+}
+
+const ChatsList: FC<ChatsListProps> = ({ history }) => {
   const [chats, setChats] = useState<any[]>([]);
 
   useMemo(async () => {
@@ -77,14 +85,27 @@ const ChatsList: FC = () => {
     const {
       data: { chats },
     } = await body.json();
+
     setChats(chats);
   }, []);
+
+  const navToChat = useCallback(
+    chat => {
+      history.push(`chats/${chat.id}`);
+    },
+    [history]
+  );
 
   return (
     <Container>
       <StyledList>
         {chats.map(chat => (
-          <StyledListItem key={chat.id} button>
+          <StyledListItem
+            key={chat.id}
+            data-testid="chat"
+            button
+            onClick={navToChat.bind(null, chat)}
+          >
             <ChatPicture
               src={chat.picture}
               alt="Profile"

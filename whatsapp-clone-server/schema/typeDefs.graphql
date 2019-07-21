@@ -10,7 +10,9 @@ type Chat {
   name: String!
   picture: String
   lastMessage: Message
+  messages: [Message!]!
 }
 type Query {
   chats: [Chat!]!
+  chat(chatId: ID!): Chat
 }
