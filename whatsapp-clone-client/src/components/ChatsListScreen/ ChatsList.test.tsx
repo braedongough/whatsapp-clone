@@ -5,7 +5,7 @@ import ChatsList from './ChatsList';
 describe('ChatsList', () => {
   afterEach(cleanup);
   it('renders fetched chats data', async () => {
-    fetch.mockResponseOnce(
+    fetchMock.mockResponseOnce(
       JSON.stringify({
         data: {
           chats: [
