@@ -1,5 +1,16 @@
-import React from 'react';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
+import styled from 'styled-components';
+import ChatNavbar from './ChatNavbar';
+import MessageInput from './MessageInput';
+import MessagesList from './MessagesList';
+import { History } from 'history';
+
+const Container = styled.div`
+  background: url(/assets/chat-background.jpg);
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+`;
 
 const getChatQuery = `
   query GetChat($chatId: ID!) {
@@ -18,15 +29,16 @@ const getChatQuery = `
 
 interface ChatRoomScreenParams {
   chatId: string;
+  history: History;
 }
 
-interface ChatQueryMessage {
+export interface ChatQueryMessage {
   id: string;
   content: string;
   createdAt: Date;
 }
 
-interface ChatQueryResult {
+export interface ChatQueryResult {
   id: string;
   name: string;
   picture: string;
@@ -35,7 +47,10 @@ interface ChatQueryResult {
 
 type OptionalChatQueryResult = ChatQueryResult | null;
 
-const ChatRoomScreen: React.FC<ChatRoomScreenParams> = ({ chatId }) => {
+const ChatRoomScreen: React.FC<ChatRoomScreenParams> = ({
+  chatId,
+  history,
+}) => {
   const [chat, setChat] = useState<OptionalChatQueryResult>(null);
 
   useMemo(async () => {
@@ -57,20 +72,30 @@ const ChatRoomScreen: React.FC<ChatRoomScreenParams> = ({ chatId }) => {
     setChat(chat);
   }, [chatId]);
 
+  const onSendMessage = useCallback(
+    (content: string) => {
+      if (!chat) return null;
+      const message = {
+        id: (chat.messages.length + 10).toString(),
+        createdAt: new Date(),
+        content,
+      };
+      setChat({
+        ...chat,
+        messages: chat.messages.concat(message),
+      });
+    },
+    [chat]
+  );
+
   if (!chat) return null;
+
   return (
-    <div>
-      <img src={chat.picture} alt="Profile" />
-      <div>{chat.name}</div>
-      <ul>
-        {chat.messages.map(message => (
-          <li key={message.id}>
-            <div>{message.content}</div>
-            <div>{message.createdAt}</div>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Container>
+      <ChatNavbar chat={chat} history={history} />
+      {chat.messages && <MessagesList messages={chat.messages} />}
+      <MessageInput onSendMessage={onSendMessage} />
+    </Container>
   );
 };
 export default ChatRoomScreen;
