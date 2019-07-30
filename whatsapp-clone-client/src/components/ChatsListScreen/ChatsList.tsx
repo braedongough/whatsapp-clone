@@ -1,11 +1,10 @@
-import React, { FC, useState, useMemo, useCallback } from 'react';
+import React, { FC, useCallback } from 'react';
 import moment from 'moment';
 import { List, ListItem } from '@material-ui/core';
 import styled from 'styled-components';
 import { History } from 'history';
-
-// ! CONTINUE LESSON AT
-// * Client Step 6.4: Test new navigation logic [https://www.tortilla.academy/Urigo/WhatsApp-Clone-Tutorial/master/next/step/6]
+import gql from 'graphql-tag';
+import { useQuery } from 'react-apollo-hooks';
 
 const Container = styled.div`
   height: calc(100% - 56px);
@@ -52,7 +51,7 @@ const MessageDate = styled.div`
   font-size: 13px;
 `;
 
-const getChatsQuery = `
+const getChatsQuery = gql`
   query GetChats {
     chats {
       id
@@ -72,22 +71,7 @@ interface ChatsListProps {
 }
 
 const ChatsList: FC<ChatsListProps> = ({ history }) => {
-  const [chats, setChats] = useState<any[]>([]);
-
-  useMemo(async () => {
-    const body = await fetch(`${process.env.REACT_APP_SERVER_URL}/graphql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query: getChatsQuery }),
-    });
-    const {
-      data: { chats },
-    } = await body.json();
-
-    setChats(chats);
-  }, []);
+  const { data } = useQuery<any>(getChatsQuery);
 
   const navToChat = useCallback(
     chat => {
@@ -96,10 +80,15 @@ const ChatsList: FC<ChatsListProps> = ({ history }) => {
     [history]
   );
 
+  if (data === undefined || data.chats === undefined) {
+    return null;
+  }
+  let chats = data.chats;
+
   return (
     <Container>
       <StyledList>
-        {chats.map(chat => (
+        {chats.map((chat: any) => (
           <StyledListItem
             key={chat.id}
             data-testid="chat"

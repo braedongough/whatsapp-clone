@@ -1,8 +1,12 @@
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { ApolloProvider } from 'react-apollo-hooks';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+
 import App from './App';
+import client from './client';
+
+import './index.css';
 
 const theme = createMuiTheme({
   palette: {
@@ -13,7 +17,9 @@ const theme = createMuiTheme({
 
 ReactDOM.render(
   <MuiThemeProvider theme={theme}>
-    <App />
+    <ApolloProvider>
+      <App />
+    </ApolloProvider>
   </MuiThemeProvider>,
   document.getElementById('root')
 );
